@@ -1,0 +1,127 @@
+{
+  "name": "copilot-router",
+  "displayName": "CopilotRouter",
+  "description": "Intelligent model routing for GitHub Copilot — stop burning premium requests on simple questions.",
+  "version": "0.1.0",
+  "publisher": "YOUR_PUBLISHER_ID",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YOUR_USERNAME/copilot-router"
+  },
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "AI",
+    "Other"
+  ],
+  "keywords": [
+    "copilot",
+    "github copilot",
+    "routing",
+    "budget",
+    "ai"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "copilotRouter.openDashboard",
+        "title": "CopilotRouter: Open Dashboard",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "copilotRouter.resetBudget",
+        "title": "CopilotRouter: Reset Budget Counter"
+      },
+      {
+        "command": "copilotRouter.toggleEnabled",
+        "title": "CopilotRouter: Toggle On/Off"
+      }
+    ],
+    "chatParticipants": [
+      {
+        "id": "copilot-router.router",
+        "name": "router",
+        "description": "Routes your query to the best model automatically",
+        "isSticky": false
+      }
+    ],
+    "configuration": {
+      "title": "CopilotRouter",
+      "properties": {
+        "copilotRouter.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable or disable CopilotRouter"
+        },
+        "copilotRouter.trivialModel": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "description": "Model family for trivial queries (0× cost)"
+        },
+        "copilotRouter.moderateModel": {
+          "type": "string",
+          "default": "gpt-4o",
+          "description": "Model family for moderate queries (1× cost)"
+        },
+        "copilotRouter.complexModel": {
+          "type": "string",
+          "default": "claude-opus",
+          "description": "Model family for complex queries (3× cost)"
+        },
+        "copilotRouter.budgetLimit": {
+          "type": "number",
+          "default": 300,
+          "minimum": 1,
+          "description": "Monthly request budget (Copilot Pro = 300, Business = varies)"
+        },
+        "copilotRouter.autoTightenAt": {
+          "type": "number",
+          "default": 80,
+          "minimum": 1,
+          "maximum": 100,
+          "description": "Tighten routing when this percentage of budget is used"
+        },
+        "copilotRouter.llmFallbackThreshold": {
+          "type": "number",
+          "default": 0.7,
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Heuristic confidence below which LLM tiebreaker is used (0 = always heuristic, 1 = always LLM)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "npm run build:ext && npm run build:webview",
+    "build:ext": "esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --platform=node --target=node18 --sourcemap",
+    "build:webview": "cd webview-ui && npm run build",
+    "watch:ext": "npm run build:ext -- --watch",
+    "watch:webview": "cd webview-ui && npm run dev",
+    "compile": "tsc --noEmit",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTests.js",
+    "pretest": "npm run build:ext && tsc -p tsconfig.test.json",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^18.0.0",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vscode/test-electron": "^2.3.9",
+    "@vscode/vsce": "^2.24.0",
+    "esbuild": "^0.20.0",
+    "eslint": "^8.57.0",
+    "mocha": "^11.7.5",
+    "typescript": "^5.4.0"
+  }
+}
